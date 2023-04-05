@@ -74,39 +74,42 @@ def sign(a):
     return (a > 0) - (a < 0)
     
 def move_servo_absolute(target_base_angle = 90.0, 
-                        target_shoulder_angle = 115.0):
-
-    #target_elbow_angle = 110.0, target_close = True
-
-    #Define the neutral angles for each joint
-    #At these angle the robot arm is athe the axis x for each joint
-    base_neutral = 90.0
-    shoulder_neutral = 115.0
-    elbow_neutral = 110.0
+                        target_shoulder_angle = 115.0, 
+                        target_elbow_angle = 110.0):
 
     dt = 0.001
-    i = 0 
+    # i = 0 
 
     delta_base = sign(target_base_angle-pca.servo[0].angle) 
-    delta_shoulder = sign(target_shoulder_angle-pca.servo[0].angle) 
+    delta_shoulder = sign(target_shoulder_angle-pca.servo[1].angle) 
+    delta_elbow = sign(target_elbow_angle-pca.servo[2].angle)
+    
     #acceptable error
     ae = 1.0
-    while abs(pca.servo[0].angle - target_base_angle) > 1.0 or abs(pca.servo[1].angle - target_shoulder_angle) > 1.0: 
+    while abs(pca.servo[0].angle - target_base_angle) > ae or abs(pca.servo[1].angle - target_shoulder_angle) > ae or abs(pca.servo[2].angle - target_elbow_angle) > ae : 
+        
         if abs(pca.servo[0].angle - target_base_angle) < ae:
             delta_base = 0.0
         if abs(pca.servo[1].angle - target_shoulder_angle) < ae:
             delta_shoulder = 0.0
+        if abs(pca.servo[2].angle - target_elbow_angle) < ae:
+            delta_elbow = 0.0
+        
         pca.servo[0].angle += delta_base
-        print("base angle: ", pca.servo[0].angle)
-        pca.servo[1].angle += delta_shoulder
-        print("shoulder angle: ", pca.servo[1].angle)
+        # print("---base angle: ", pca.servo[0].angle)
+        pca.servo[1].angle += 2*delta_shoulder
+        # print("---shoulder angle: ", pca.servo[1].angle)
+        pca.servo[2].angle += 2*delta_elbow
+        # print("---elbow angle: ", pca.servo[2].angle)
+        
         time.sleep(dt)
-    print("base error: ", abs(pca.servo[0].angle - target_base_angle))
-    print("shoulder error: ", abs(pca.servo[1].angle - target_shoulder_angle))
 
+    # print("base error: ", abs(pca.servo[0].angle - target_base_angle))
+    # print("shoulder error: ", abs(pca.servo[1].angle - target_shoulder_angle))
+    # print("elbow error: ", abs(pca.servo[2].angle - target_elbow_angle))
 
     # delta_base = sign(target_base_angle-pca.servo[i].angle) 
-    # while abs(pca.servo[i].angle - target_base_angle) > 1.0: 
+    # while abs(pca.servo[i].angle - target_base_angle) > ae: 
     #     pca.servo[i].angle += delta_base
     #     time.sleep(dt)
     #     print("base angle: ", pca.servo[i].angle)
